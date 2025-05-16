@@ -1,0 +1,19 @@
+{
+  "name": "video-service",
+  "version": "1.0.0",
+  "description": "Microservicio de videos para StreamFlow",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "seed": "node src/database/seeders/seeder.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "@grpc/grpc-js": "^1.13.3",
+    "@grpc/proto-loader": "^0.7.15",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.14.3"
+  }
+}

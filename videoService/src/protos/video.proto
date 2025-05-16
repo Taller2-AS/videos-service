@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package video;
+
+service VideoService {
+  rpc CreateVideo (VideoInput) returns (Video);
+  rpc GetVideoById (VideoId) returns (Video);
+  rpc UpdateVideo (VideoUpdateInput) returns (Video);
+  rpc DeleteVideo (VideoId) returns (Empty);
+  rpc ListVideos (VideoQuery) returns (VideoList);
+}
+
+message Video {
+  string id = 1;
+  string titulo = 2;
+  string descripcion = 3;
+  string genero = 4;
+  string createdAt = 5;
+}
+
+message VideoInput {
+  string titulo = 1;
+  string descripcion = 2;
+  string genero = 3;
+  string role = 4;
+}
+
+message VideoUpdateInput {
+  string id = 1;
+  string titulo = 2;
+  string descripcion = 3;
+  string genero = 4;
+  string role = 5;
+}
+
+message VideoId {
+  string id = 1;
+}
+
+message VideoQuery {
+  string titulo = 1;
+  string genero = 2;
+}
+
+message VideoList {
+  repeated Video videos = 1;
+}
+
+message Empty {}
