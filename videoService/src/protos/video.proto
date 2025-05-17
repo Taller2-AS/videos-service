@@ -22,7 +22,6 @@ message VideoInput {
   string titulo = 1;
   string descripcion = 2;
   string genero = 3;
-  string role = 4;
 }
 
 message VideoUpdateInput {
@@ -30,7 +29,6 @@ message VideoUpdateInput {
   string titulo = 2;
   string descripcion = 3;
   string genero = 4;
-  string role = 5;
 }
 
 message VideoId {

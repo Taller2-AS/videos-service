@@ -1,26 +1,7 @@
 const Video = require('../database/models/videoModel');
-const verifyToken = require('../utils/verifyToken');
-
-const getUserFromMetadata = async (call) => {
-  const metadata = call.metadata.getMap();
-  const authHeader = metadata.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new Error('No estás autenticado para realizar esta petición');
-  }
-
-  const token = authHeader.split(' ')[1];
-  return await verifyToken(token);
-};
 
 const createVideo = async (call, callback) => {
   try {
-    const user = await getUserFromMetadata(call);
-
-    if (user.role !== 'Administrador') {
-      return callback(new Error('Solo los administradores pueden subir videos'));
-    }
-
     const { titulo, descripcion, genero } = call.request;
 
     if (!titulo || !descripcion || !genero) {
@@ -43,8 +24,6 @@ const createVideo = async (call, callback) => {
 
 const getVideoById = async (call, callback) => {
   try {
-    const user = await getUserFromMetadata(call);
-
     const { id } = call.request;
     const video = await Video.findOne({ _id: id, eliminado: false });
 
@@ -66,12 +45,6 @@ const getVideoById = async (call, callback) => {
 
 const updateVideo = async (call, callback) => {
   try {
-    const user = await getUserFromMetadata(call);
-
-    if (user.role !== 'Administrador') {
-      return callback(new Error('Solo los administradores pueden actualizar videos'));
-    }
-
     const { id, titulo, descripcion, genero } = call.request;
 
     const updatedVideo = await Video.findOneAndUpdate(
@@ -98,12 +71,6 @@ const updateVideo = async (call, callback) => {
 
 const deleteVideo = async (call, callback) => {
   try {
-    const user = await getUserFromMetadata(call);
-
-    if (user.role !== 'Administrador') {
-      return callback(new Error('Solo los administradores pueden eliminar videos'));
-    }
-
     const { id } = call.request;
 
     const deletedVideo = await Video.findOneAndUpdate(
@@ -123,8 +90,6 @@ const deleteVideo = async (call, callback) => {
 
 const listVideos = async (call, callback) => {
   try {
-    await getUserFromMetadata(call);
-
     const { titulo, genero } = call.request;
 
     const filtro = {
