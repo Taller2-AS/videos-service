@@ -10,3 +10,14 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:
       - "27017:27017"
+
+  rabbitmq:
+      image: rabbitmq:3-management
+      container_name: rabbitmq
+      restart: always
+      environment:
+        RABBITMQ_DEFAULT_USER: admin
+        RABBITMQ_DEFAULT_PASS: admin
+      ports:
+        - "5672:5672"     # Para conexión con servicios
+        - "15672:15672"   # Interfaz web de RabbitMQ

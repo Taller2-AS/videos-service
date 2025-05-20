@@ -1,4 +1,5 @@
 const Video = require('../database/models/videoModel');
+const { getChannel, EXCHANGE_NAME } = require('../queue/config/connection');
 
 const createVideo = async (call, callback) => {
   try {
@@ -9,6 +10,20 @@ const createVideo = async (call, callback) => {
     }
 
     const newVideo = await Video.create({ titulo, descripcion, genero });
+
+    // Publicar evento a RabbitMQ
+    const channel = await getChannel();
+    channel.publish(
+      EXCHANGE_NAME,
+      '',
+      Buffer.from(JSON.stringify({
+        event: 'VIDEO_CREATED',
+        videoId: newVideo._id.toString(),
+        titulo,
+        genero,
+        timestamp: new Date().toISOString()
+      }))
+    );
 
     callback(null, {
       id: newVideo._id.toString(),
@@ -57,6 +72,18 @@ const updateVideo = async (call, callback) => {
       return callback(new Error('Video no encontrado'));
     }
 
+    // Publicar evento a RabbitMQ
+    const channel = await getChannel();
+    channel.publish(
+      EXCHANGE_NAME,
+      '',
+      Buffer.from(JSON.stringify({
+        event: 'VIDEO_UPDATED',
+        videoId: updatedVideo._id.toString(),
+        timestamp: new Date().toISOString()
+      }))
+    );
+
     callback(null, {
       id: updatedVideo._id.toString(),
       titulo: updatedVideo.titulo,
@@ -81,6 +108,18 @@ const deleteVideo = async (call, callback) => {
     if (!deletedVideo) {
       return callback(new Error('Video no encontrado'));
     }
+
+    // Publicar evento a RabbitMQ
+    const channel = await getChannel();
+    channel.publish(
+      EXCHANGE_NAME,
+      '',
+      Buffer.from(JSON.stringify({
+        event: 'VIDEO_DELETED',
+        videoId: id,
+        timestamp: new Date().toISOString()
+      }))
+    );
 
     callback(null, {});
   } catch (err) {

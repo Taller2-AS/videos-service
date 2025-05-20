@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const grpc = require('@grpc/grpc-js');
 const loadProto = require('./src/utils/loadProto');
 const videoService = require('./src/services/videoService');
+const initializeQueueConsumers = require('./src/queue'); // 🔁 nuevo
 
 dotenv.config({ path: './.env' });
 
@@ -16,7 +17,14 @@ mongoose.connect(DB)
     process.exit(1);
   });
 
-// gRPC Server
+// Inicializar consumidores de RabbitMQ
+initializeQueueConsumers()
+  .then(() => console.log('📦 RabbitMQ Consumers inicializados'))
+  .catch(err => {
+    console.error('❌ Error iniciando consumidores:');
+    console.error(err); // <- muestra el error completo
+  });
+// Servidor gRPC
 const server = new grpc.Server();
 const VideoProto = loadProto('video');
 

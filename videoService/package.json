@@ -11,6 +11,7 @@
     "@faker-js/faker": "^9.8.0",
     "@grpc/grpc-js": "^1.13.3",
     "@grpc/proto-loader": "^0.7.15",
+    "amqplib": "^0.10.8",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
