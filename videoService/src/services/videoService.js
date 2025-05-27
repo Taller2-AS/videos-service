@@ -1,5 +1,6 @@
 const Video = require('../database/models/videoModel');
 const { getChannel, EXCHANGE_NAME } = require('../queue/config/connection');
+const publishLog = require('../queue/publisher/logPublisher');
 
 const createVideo = async (call, callback) => {
   try {
@@ -11,7 +12,6 @@ const createVideo = async (call, callback) => {
 
     const newVideo = await Video.create({ titulo, descripcion, genero });
 
-    // Publicar evento a RabbitMQ
     const channel = await getChannel();
     channel.publish(
       EXCHANGE_NAME,
@@ -25,6 +25,15 @@ const createVideo = async (call, callback) => {
       }))
     );
 
+    await publishLog('action', {
+      userId: null,
+      email: '',
+      method: 'CreateVideo',
+      url: '/videos',
+      action: 'CREAR VIDEO',
+      date: new Date().toISOString()
+    });
+
     callback(null, {
       id: newVideo._id.toString(),
       titulo: newVideo.titulo,
@@ -33,6 +42,12 @@ const createVideo = async (call, callback) => {
       createdAt: newVideo.createdAt.toISOString()
     });
   } catch (err) {
+    await publishLog('error', {
+      userId: null,
+      email: '',
+      error: err.message,
+      date: new Date().toISOString()
+    });
     callback(err);
   }
 };
@@ -43,6 +58,12 @@ const getVideoById = async (call, callback) => {
     const video = await Video.findOne({ _id: id, eliminado: false });
 
     if (!video) {
+      await publishLog('error', {
+        userId: null,
+        email: '',
+        error: 'Video no encontrado',
+        date: new Date().toISOString()
+      });
       return callback(new Error('Video no encontrado'));
     }
 
@@ -54,6 +75,12 @@ const getVideoById = async (call, callback) => {
       createdAt: video.createdAt.toISOString()
     });
   } catch (err) {
+    await publishLog('error', {
+      userId: null,
+      email: '',
+      error: err.message,
+      date: new Date().toISOString()
+    });
     callback(err);
   }
 };
@@ -69,10 +96,15 @@ const updateVideo = async (call, callback) => {
     );
 
     if (!updatedVideo) {
+      await publishLog('error', {
+        userId: null,
+        email: '',
+        error: 'Video no encontrado',
+        date: new Date().toISOString()
+      });
       return callback(new Error('Video no encontrado'));
     }
 
-    // Publicar evento a RabbitMQ
     const channel = await getChannel();
     channel.publish(
       EXCHANGE_NAME,
@@ -84,6 +116,15 @@ const updateVideo = async (call, callback) => {
       }))
     );
 
+    await publishLog('action', {
+      userId: null,
+      email: '',
+      method: 'UpdateVideo',
+      url: `/videos/${id}`,
+      action: 'ACTUALIZAR VIDEO',
+      date: new Date().toISOString()
+    });
+
     callback(null, {
       id: updatedVideo._id.toString(),
       titulo: updatedVideo.titulo,
@@ -92,6 +133,12 @@ const updateVideo = async (call, callback) => {
       createdAt: updatedVideo.createdAt.toISOString()
     });
   } catch (err) {
+    await publishLog('error', {
+      userId: null,
+      email: '',
+      error: err.message,
+      date: new Date().toISOString()
+    });
     callback(err);
   }
 };
@@ -106,10 +153,15 @@ const deleteVideo = async (call, callback) => {
     );
 
     if (!deletedVideo) {
+      await publishLog('error', {
+        userId: null,
+        email: '',
+        error: 'Video no encontrado',
+        date: new Date().toISOString()
+      });
       return callback(new Error('Video no encontrado'));
     }
 
-    // Publicar evento a RabbitMQ
     const channel = await getChannel();
     channel.publish(
       EXCHANGE_NAME,
@@ -121,8 +173,23 @@ const deleteVideo = async (call, callback) => {
       }))
     );
 
+    await publishLog('action', {
+      userId: null,
+      email: '',
+      method: 'DeleteVideo',
+      url: `/videos/${id}`,
+      action: 'ELIMINAR VIDEO',
+      date: new Date().toISOString()
+    });
+
     callback(null, {});
   } catch (err) {
+    await publishLog('error', {
+      userId: null,
+      email: '',
+      error: err.message,
+      date: new Date().toISOString()
+    });
     callback(err);
   }
 };
@@ -149,6 +216,12 @@ const listVideos = async (call, callback) => {
 
     callback(null, { videos: response });
   } catch (err) {
+    await publishLog('error', {
+      userId: null,
+      email: '',
+      error: err.message,
+      date: new Date().toISOString()
+    });
     callback(err);
   }
 };
