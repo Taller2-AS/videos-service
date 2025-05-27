@@ -19,10 +19,10 @@ mongoose.connect(DB)
 
 // Inicializar consumidores de RabbitMQ
 initializeQueueConsumers()
-  .then(() => console.log('📦 RabbitMQ Consumers inicializados'))
+  .then(() => console.log('RabbitMQ Consumers inicializados'))
   .catch(err => {
-    console.error('❌ Error iniciando consumidores:');
-    console.error(err); // <- muestra el error completo
+    console.error('Error iniciando consumidores:');
+    console.error(err);
   });
 // Servidor gRPC
 const server = new grpc.Server();
