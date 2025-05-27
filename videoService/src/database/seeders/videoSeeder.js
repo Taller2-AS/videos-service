@@ -1,13 +1,16 @@
+const fs = require('fs');
+const path = require('path');
 const Video = require('../models/videoModel');
-const generateFakeVideo = require('../fakers/videoFaker');
 
-const insertFakeVideos = async (cantidad = 500) => {
+const insertFakeVideos = async () => {
   try {
-    const videos = Array.from({ length: cantidad }, () => generateFakeVideo());
+    const jsonPath = path.join(__dirname, '../../../data/videos.json');
+    const videos = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+
     await Video.insertMany(videos);
-    console.log(`${cantidad} videos insertados correctamente.`);
+    console.log(`${videos.length} videos insertados correctamente desde JSON.`);
   } catch (error) {
-    console.error('Error al insertar videos:', error.message);
+    console.error('Error al insertar videos desde JSON:', error.message);
     throw error;
   }
 };
