@@ -18,9 +18,8 @@ const createVideo = async (call, callback) => {
       '',
       Buffer.from(JSON.stringify({
         event: 'VIDEO_CREATED',
-        videoId: newVideo._id.toString(),
-        titulo,
-        genero,
+        id: newVideo._id.toString(),
+        name: newVideo.titulo,
         timestamp: new Date().toISOString()
       }))
     );
@@ -111,7 +110,8 @@ const updateVideo = async (call, callback) => {
       '',
       Buffer.from(JSON.stringify({
         event: 'VIDEO_UPDATED',
-        videoId: updatedVideo._id.toString(),
+        id: updatedVideo._id.toString(),
+        name: updatedVideo.titulo,
         timestamp: new Date().toISOString()
       }))
     );
@@ -143,6 +143,7 @@ const updateVideo = async (call, callback) => {
   }
 };
 
+
 const deleteVideo = async (call, callback) => {
   try {
     const { id } = call.request;
@@ -168,7 +169,7 @@ const deleteVideo = async (call, callback) => {
       '',
       Buffer.from(JSON.stringify({
         event: 'VIDEO_DELETED',
-        videoId: id,
+        id: id,
         timestamp: new Date().toISOString()
       }))
     );
@@ -193,6 +194,7 @@ const deleteVideo = async (call, callback) => {
     callback(err);
   }
 };
+
 
 const listVideos = async (call, callback) => {
   try {
